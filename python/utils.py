@@ -1,5 +1,12 @@
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, Union
+import time
+
+start_time: float = time.time()
+
+def print_time_elapsed(label: str = "Time elapsed"):
+    global start_time
+    print(f"{label}: {(time.time() - start_time) * 1000} ms")
 
 def gcd(a: int, b: int) -> int:
     while b > 0:
@@ -14,8 +21,14 @@ class Point:
     row: int
     col: int
 
-    def manhattan_distance_to(self, other) -> int:
+    def manhattan_distance_to(self, other: "Point") -> int:
         return abs(self.row - other[0]) + abs(self.col - other[1])
+    
+    def rotate_90_cw(self) -> "Point":
+        return Point(self.col, -self.row)
+    
+    def rotate_90_ccw(self) -> "Point":
+        return Point(-self.col, self.row)
 
     def __getitem__(self, index: int) -> int:
         return [self.row, self.col].__getitem__(index)
@@ -23,14 +36,17 @@ class Point:
     def __iter__(self) -> Iterator[int]:
         return [self.row, self.col].__iter__()
 
-    def __add__(self, other) -> "Point":
+    def __add__(self, other: "Point") -> "Point":
         return Point(self.row + other[0], self.col + other[1])
     
-    def __sub__(self, other) -> "Point":
+    def __sub__(self, other: "Point") -> "Point":
         return Point(self.row - other[0], self.col - other[1])
     
     def __mul__(self, scalar: int) -> "Point":
         return Point(self.row * scalar, self.col * scalar)
+    
+    def __hash__(self) -> int:
+        return (self.row, self.col).__hash__()
 
 class TileMapRow:
     def __init__(self, filler_tile: str = " "):
@@ -53,7 +69,7 @@ class TileMapRow:
         else:
             return self.filler_tile
     
-    def __getitem__(self, col) -> str:
+    def __getitem__(self, col: Union[int, slice]) -> str:
         if isinstance(col, slice):
             start = col.start if col.start is not None else (self.min_col() if col.step is None or col.step > 0 else self.max_col())
             stop = col.stop if col.stop is not None else (self.max_col() + 1 if col.step is None or col.step > 0 else self.min_col() - 1)
@@ -110,7 +126,7 @@ class TileMap:
     def max_col(self) -> int:
         return self.cached_max_col
 
-    def get(self, point) -> str:
+    def get(self, point: Point) -> str:
         row = point[0]
         col = point[1]
         if self.min_row() <= row <= self.max_row():
@@ -118,7 +134,7 @@ class TileMap:
         else:
             return self.filler_tile
     
-    def put(self, point, tiles: str):
+    def put(self, point: Point, tiles: str):
         row = point[0]
         col = point[1]
         if row > self.max_row():
@@ -139,7 +155,8 @@ class TileMap:
     
     def __iter__(self) -> Iterator[tuple[Point, str]]:
         points_iter = (Point(self.first_row + row_index, col) for row_index in range(len(self.rows)) for col in self.rows[row_index].col_range())
-        return ((point, self.get(point)) for point in points_iter)
+        raw_iter = ((point, self.get(point)) for point in points_iter)
+        return ((point, tile) for point, tile in raw_iter if tile != self.filler_tile)
     
     def __str__(self) -> str:
         return "\n".join(tile_row[self.min_col() : self.max_col() + 1] for tile_row in self.rows)

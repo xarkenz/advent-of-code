@@ -31,7 +31,7 @@ for point, tile in grid:
         if check_word(grid, point, direction):
             xmas_count += 1
 
-print(xmas_count)
+print("[day04p1] XMAS appearances:", xmas_count)
 
 def check_x(grid, r, c):
     if get(grid, r, c) == 'A':
@@ -48,4 +48,6 @@ for r in range(len(grid)):
         if check_x(grid, r, c):
             xmas_count += 1
 
-print(xmas_count)
+print("[day04p2] X-MAS appearances:", xmas_count)
+
+print_time_elapsed()

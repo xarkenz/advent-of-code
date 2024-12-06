@@ -1,3 +1,5 @@
+from utils import *
+
 orderings = []
 updates = []
 
@@ -41,3 +43,5 @@ for update in updates:
         middle_total += update[len(update) // 2]
 
 print(middle_total)
+
+print_time_elapsed()

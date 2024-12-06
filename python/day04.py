@@ -1,3 +1,5 @@
+from utils import *
+
 def get(grid, r, c):
     if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[r]):
         return '.'
@@ -42,3 +44,5 @@ for r in range(len(grid)):
             count += 1
 
 print(count)
+
+print_time_elapsed()

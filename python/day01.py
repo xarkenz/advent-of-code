@@ -1,3 +1,5 @@
+from utils import *
+
 with open("day01.txt") as f:
     lines = f.readlines()
 
@@ -15,3 +17,5 @@ right.sort()
 print(sum(abs(x - y) for x, y in zip(left, right)))
 
 print(sum(i * right.count(i) for i in left))
+
+print_time_elapsed()

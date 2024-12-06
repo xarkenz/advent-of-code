@@ -1,3 +1,5 @@
+from utils import *
+
 with open("input/day02.txt") as f:
     lines = f.readlines()
 
@@ -46,3 +48,5 @@ for report in reports:
             break
 
 print(safe_count)
+
+print_time_elapsed()

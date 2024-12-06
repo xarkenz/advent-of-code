@@ -1,3 +1,5 @@
+from utils import *
+
 import re
 
 with open("input/day03.txt") as f:
@@ -26,3 +28,5 @@ for item in matches:
         result += int(x) * int(y)
 
 print(result)
+
+print_time_elapsed()

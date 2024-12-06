@@ -82,3 +82,5 @@ while True:
             break
 
 print(loop_positions)
+
+print_time_elapsed()
