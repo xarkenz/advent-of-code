@@ -6,7 +6,7 @@ start_time: float = time.time()
 
 def print_time_elapsed(label: str = "Time elapsed"):
     global start_time
-    print(f"{label}: {(time.time() - start_time) * 1000} ms")
+    print(f"{label}: {(time.time() - start_time) * 1000:.3f} ms")
 
 def gcd(a: int, b: int) -> int:
     while b > 0:
