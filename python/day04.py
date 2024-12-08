@@ -1,48 +1,44 @@
 from utils import *
 
-def get(grid, r, c):
-    if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[r]):
-        return '.'
-    else:
-        return grid[r][c]
+grid: TileMap = get_input_tile_map("day04.txt")
 
-def check(grid, r, c, dr, dc):
-    for ch in "XMAS":
-        if get(grid, r, c) != ch:
+def check_xmas(grid: TileMap, point: Point, direction: Point) -> bool:
+    for letter in "XMAS":
+        if grid.get(point) != letter:
             return False
-        r += dr
-        c += dc
+        point = point + direction
     return True
 
-with open("input/day04.txt") as f:
-    grid = f.readlines()
+def check_x_mas(grid: TileMap, point: Point) -> bool:
+    if grid.get(point) == "A":
+        tl = grid.get(point + (-1, -1))
+        tr = grid.get(point + (-1, 1))
+        bl = grid.get(point + (1, -1))
+        br = grid.get(point + (1, 1))
+        return ((tl == "M" and br == "S") or (tl == "S" and br == "M")) and ((tr == "M" and bl == "S") or (tr == "S" and bl == "M"))
 
-count = 0
-dirs = [(1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+directions: list[Point] = [
+    Point(1, 0),
+    Point(0, 1),
+    Point(-1, 0),
+    Point(0, -1),
+    Point(1, 1),
+    Point(1, -1),
+    Point(-1, 1),
+    Point(-1, -1),
+]
 
-for r in range(len(grid)):
-    for c in range(len(grid[r])):
-        for dr, dc in dirs:
-            if check(grid, r, c, dr, dc):
-                count += 1
+xmas_count: int = 0
+x_mas_count: int = 0
 
-print(count)
+for point, _ in grid:
+    for direction in directions:
+        if check_xmas(grid, point, direction):
+            xmas_count += 1
+    if check_x_mas(grid, point):
+        x_mas_count += 1
 
-def check_x(grid, r, c):
-    if get(grid, r, c) == 'A':
-        tl = get(grid, r - 1, c - 1)
-        tr = get(grid, r - 1, c + 1)
-        bl = get(grid, r + 1, c - 1)
-        br = get(grid, r + 1, c + 1)
-        return ((tl == 'M' and br == 'S') or (tl == 'S' and br == 'M')) and ((tr == 'M' and bl == 'S') or (tr == 'S' and bl == 'M'))
-
-count = 0
-
-for r in range(len(grid)):
-    for c in range(len(grid[r])):
-        if check_x(grid, r, c):
-            count += 1
-
-print(count)
+print("[day04p1] XMAS appearances:", xmas_count)
+print("[day04p2] X-MAS appearances:", x_mas_count)
 
 print_time_elapsed()

@@ -1,9 +1,6 @@
 from utils import *
 
-with open("input/day02.txt") as f:
-    lines = f.readlines()
-
-reports = [[int(i) for i in line.split()] for line in lines]
+reports = [[int(i) for i in line.split()] for line in get_input_lines("day02.txt")]
 
 safe_count = 0
 
@@ -18,7 +15,7 @@ for report in reports:
     else:
         safe_count += 1
 
-print(safe_count)
+print("[day02p1] Safe reports:", safe_count)
 
 safe_count = 0
 
@@ -47,6 +44,6 @@ for report in reports:
             safe_count += 1
             break
 
-print(safe_count)
+print("[day02p2] Safe reports:", safe_count)
 
 print_time_elapsed()

@@ -2,19 +2,18 @@ from utils import *
 
 import re
 
-with open("input/day03.txt") as f:
-    text = f.read()
+text = get_input_text("day03.txt")
 
-matches = re.findall("mul\\([0-9]{1,3},[0-9]{1,3}\\)", text)
+matches: list[str] = re.findall("mul\\([0-9]{1,3},[0-9]{1,3}\\)", text)
 
 result = 0
 for item in matches:
     x, y = item[4:-1].split(",")
     result += int(x) * int(y)
 
-print(result)
+print("[day03p1] Sum of multiplications:", result)
 
-matches = re.findall("mul\\([0-9]{1,3},[0-9]{1,3}\\)|do\\(\\)|don't\\(\\)", text)
+matches: list[str] = re.findall("mul\\([0-9]{1,3},[0-9]{1,3}\\)|do\\(\\)|don't\\(\\)", text)
 
 result = 0
 enabled = True
@@ -27,6 +26,6 @@ for item in matches:
         x, y = item[4:-1].split(",")
         result += int(x) * int(y)
 
-print(result)
+print("[day03p2] Sum of enabled multiplications:", result)
 
 print_time_elapsed()

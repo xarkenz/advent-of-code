@@ -2,11 +2,32 @@ from dataclasses import dataclass
 from typing import Iterator, Union
 import time
 
+# General Utilities
+
 start_time: float = time.time()
 
 def print_time_elapsed(label: str = "Time elapsed"):
     global start_time
     print(f"{label}: {(time.time() - start_time) * 1000:.3f} ms")
+
+def get_input_text(filename: str) -> str:
+    with open(f"input/{filename}") as input_file:
+        return input_file.read()
+
+def get_input_lines(filename: str) -> list[str]:
+    with open(f"input/{filename}") as input_file:
+        lines = [line.strip() for line in input_file.readlines()]
+        while lines and not lines[-1]:
+            lines.pop()
+        return lines
+
+def get_input_tile_map(filename: str) -> "TileMap":
+    tile_map = TileMap()
+    for row, line in enumerate(get_input_lines(filename)):
+        tile_map.put((row, 0), line)
+    return tile_map
+
+# Math Utilities
 
 def gcd(a: int, b: int) -> int:
     while b > 0:
@@ -15,6 +36,8 @@ def gcd(a: int, b: int) -> int:
 
 def lcm(a: int, b: int) -> int:
     return a // gcd(a, b) * b
+
+# Tile Map Utilities
 
 @dataclass
 class Point:

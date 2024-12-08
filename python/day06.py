@@ -1,86 +1,81 @@
 from utils import *
 
-grid: TileMap = TileMap()
+directions: list[Point] = [
+    Point(1, 0),
+    Point(0, 1),
+    Point(-1, 0),
+    Point(0, -1),
+]
 
-with open("input/day06.txt") as input_file:
-    for row, line in enumerate(input_file.readlines()):
-        grid.put((row, 0), line.strip())
+base_grid: TileMap = get_input_tile_map("day06.txt")
 
-init_guard_dir = Point(-1, 0)
-for point, tile in grid:
+for point, tile in base_grid:
     if tile == "^":
-        grid.put(point, ".")
+        base_grid.put(point, ".")
+        init_guard_dir = Point(-1, 0)
         init_guard_pos = point
         break
 else:
     print("no guard")
     exit()
 
-grid1 = grid.copy()
-guard_pos = init_guard_pos
-guard_dir = init_guard_dir
-while True:
-    grid1.put(guard_pos, "X")
-    next_guard_pos = guard_pos + guard_dir
-    tile = grid.get(next_guard_pos)
-    if tile == ".":
-        guard_pos = next_guard_pos
-    elif tile == "#":
-        guard_dir = Point(guard_dir.col, -guard_dir.row)
+for point, tile in base_grid:
+    if tile == "#":
+        for direction in directions:
+            adjacent = point + direction
+            if base_grid.get(adjacent) == ".":
+                base_grid.put(adjacent, ",")
+
+waypoints: set[tuple[Point, Point]] = {(init_guard_pos, init_guard_dir)}
+looping_walls: set[Point] = set()
+
+def log_waypoint(waypoints: set[tuple[Point, Point]], guard_pos: Point, guard_dir: Point) -> bool:
+    if (guard_pos, guard_dir) in waypoints:
+        return True
     else:
-        break
+        waypoints.add((guard_pos, guard_dir))
+        return False
 
-count = 0
-for point, tile in grid1:
-    if tile == "X":
-        count += 1
-
-print(count)
-
-dir_tiles = {(1, 0): "v", (0, 1): ">", (0, -1): "<", (-1, 0): "^"}
-tile_dirs = {"v": Point(1, 0), ">": Point(0, 1), "<": Point(0, -1), "^": Point(-1, 0)}
-
-tested = TileMap()
-tested.put(init_guard_pos, "Y")
-
-loop_positions = 0
-
-def test(grid: TileMap, guard_pos: Point, guard_dir: Point):
+def is_loop_detected(grid: TileMap, waypoints: set[tuple[Point, Point]], guard_pos: Point, guard_dir: Point, placed_wall: Point) -> bool:
+    current_tile = grid.get(guard_pos)
     while True:
         next_guard_pos = guard_pos + guard_dir
-        tile = grid.get(next_guard_pos)
-        if tile == "." or tile in tile_dirs:
-            orig_tile = grid.get(guard_pos)
-            if orig_tile in tile_dirs and tile_dirs[orig_tile] == guard_dir:
-                return True
-            grid.put(guard_pos, dir_tiles[guard_dir.row, guard_dir.col])
-            guard_pos = next_guard_pos
-        elif tile == "#":
-            guard_dir = Point(guard_dir.col, -guard_dir.row)
-        else:
+        next_tile = grid.get(next_guard_pos)
+        if next_tile == " ":
             return False
+        elif next_tile == "#" or next_guard_pos == placed_wall:
+            guard_dir = guard_dir.rotate_90_cw()
+        else:
+            if current_tile == "," or guard_pos.manhattan_distance_to(placed_wall) == 1:
+                if log_waypoint(waypoints, guard_pos, guard_dir):
+                    return True
+            current_tile = next_tile
+            guard_pos = next_guard_pos
 
-grid2 = grid.copy()
+path_grid = base_grid.copy()
 guard_pos = init_guard_pos
 guard_dir = init_guard_dir
+
+current_tile = path_grid.get(guard_pos)
 while True:
     next_guard_pos = guard_pos + guard_dir
-    tile = grid.get(next_guard_pos)
-    if tile == "#":
-        guard_dir = Point(guard_dir.col, -guard_dir.row)
+    next_tile = path_grid.get(next_guard_pos)
+    if next_tile == "#":
+        guard_dir = guard_dir.rotate_90_cw()
     else:
-        if tested.get(next_guard_pos) != "Y" and grid2.get(next_guard_pos) == ".":
-            test_grid = grid2.copy()
-            test_grid.put(next_guard_pos, "#")
-            if test(test_grid, guard_pos, guard_dir):
-                tested.put(next_guard_pos, "Y")
-                loop_positions += 1
-        if tile == ".":
-            grid2.put(guard_pos, dir_tiles[guard_dir.row, guard_dir.col])
-            guard_pos = next_guard_pos
-        else:
-            break
+        path_grid.put(guard_pos, "X")
+        if next_tile != "X":
+            if next_guard_pos not in looping_walls:
+                if is_loop_detected(base_grid, waypoints.copy(), guard_pos, guard_dir, next_guard_pos):
+                    looping_walls.add(next_guard_pos)
+            if next_tile == " ":
+                break
+        if current_tile == ",":
+            log_waypoint(waypoints, guard_pos, guard_dir)
+        current_tile = next_tile
+        guard_pos = next_guard_pos
 
-print(loop_positions)
+print("[day06p1] Distinct tiles visited:", sum(tile == "X" for _, tile in path_grid))
+print("[day06p2] Loop-causing obstructions:", len(looping_walls))
 
 print_time_elapsed()
