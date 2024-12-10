@@ -11,11 +11,11 @@ def print_time_elapsed(label: str = "Time elapsed"):
     print(f"{label}: {(time.time() - start_time) * 1000:.3f} ms")
 
 def get_input_text(filename: str) -> str:
-    with open(f"input/{filename}") as input_file:
+    with open(f"./input/{filename}") as input_file:
         return input_file.read()
 
 def get_input_lines(filename: str) -> list[str]:
-    with open(f"input/{filename}") as input_file:
+    with open(f"./input/{filename}") as input_file:
         lines = [line.strip() for line in input_file.readlines()]
         while lines and not lines[-1]:
             lines.pop()

@@ -1,1 +1,4 @@
 __pycache__/
+rust/target/
+zig-out/
+.zig-cache/
