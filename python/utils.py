@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Iterator, Union
+from typing import Iterator, Union, TypeVar, TypeAlias, Generic, Optional
 import time
+import heapq
 
 # General Utilities
 
@@ -37,14 +38,42 @@ def gcd(a: int, b: int) -> int:
 def lcm(a: int, b: int) -> int:
     return a // gcd(a, b) * b
 
+# Data Structures
+
+# Basically just a wrapper around heapq methods for convenience
+_T = TypeVar("_T")
+class MinHeap(Generic[_T]):
+    items: list[_T]
+
+    def __init__(self, items: Optional[list[_T]] = None) -> None:
+        if items is not None:
+            heapq.heapify(items)
+            self.items = items
+        else:
+            self.items = []
+    
+    def push(self, item: _T) -> None:
+        heapq.heappush(self.items, item)
+    
+    def pop(self) -> _T:
+        return heapq.heappop(self.items)
+
+    def peek(self) -> _T:
+        return self.items[0]
+    
+    def __bool__(self) -> bool:
+        return bool(self.items)
+
 # Tile Map Utilities
+
+PointLike: TypeAlias = Union["Point", tuple[int, int]]
 
 @dataclass
 class Point:
     row: int
     col: int
 
-    def manhattan_distance_to(self, other: "Point") -> int:
+    def manhattan_distance_to(self, other: PointLike) -> int:
         return abs(self.row - other[0]) + abs(self.col - other[1])
     
     def rotate_90_cw(self) -> "Point":
@@ -59,10 +88,10 @@ class Point:
     def __iter__(self) -> Iterator[int]:
         return [self.row, self.col].__iter__()
 
-    def __add__(self, other: "Point") -> "Point":
+    def __add__(self, other: PointLike) -> "Point":
         return Point(self.row + other[0], self.col + other[1])
     
-    def __sub__(self, other: "Point") -> "Point":
+    def __sub__(self, other: PointLike) -> "Point":
         return Point(self.row - other[0], self.col - other[1])
     
     def __mul__(self, scalar: int) -> "Point":
@@ -149,7 +178,7 @@ class TileMap:
     def max_col(self) -> int:
         return self.cached_max_col
 
-    def get(self, point: Point) -> str:
+    def get(self, point: PointLike) -> str:
         row = point[0]
         col = point[1]
         if self.min_row() <= row <= self.max_row():
@@ -157,7 +186,7 @@ class TileMap:
         else:
             return self.filler_tile
     
-    def put(self, point: Point, tiles: str):
+    def put(self, point: PointLike, tiles: str):
         row = point[0]
         col = point[1]
         if row > self.max_row():
