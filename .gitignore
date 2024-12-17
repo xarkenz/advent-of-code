@@ -2,3 +2,8 @@ __pycache__/
 rust/target/
 zig-out/
 .zig-cache/
+
+# The Advent of Code FAQ advises against publishing sample and actual inputs in public repositories.
+# I was not aware of this until day 17, so commit history will unfortunately reveal the inputs I used.
+# Oh well... I've fixed it now.
+/inputs/
