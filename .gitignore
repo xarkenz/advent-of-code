@@ -8,5 +8,5 @@ zig-out/
 
 # The Advent of Code FAQ advises against publishing sample and actual inputs in public repositories.
 # I was not aware of this until after I had done that for a while, so commit history will
-# unfortunately reveal the inputs I used. Oh well... I've fixed it now.
+# unfortunately reveal some of the inputs I used. Oh well... I've fixed it now.
 input/

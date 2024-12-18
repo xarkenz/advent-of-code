@@ -1,0 +1,1 @@
+C:\Users\seane\Projects\adventofcode-2024\rust\target\debug\rust.exe: C:\Users\seane\Projects\adventofcode-2024\rust\src\main.rs C:\Users\seane\Projects\adventofcode-2024\rust\src\solution\day01.rs C:\Users\seane\Projects\adventofcode-2024\rust\src\solution\mod.rs C:\Users\seane\Projects\adventofcode-2024\rust\src\utils.rs
