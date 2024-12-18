@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 # Rust
-rust/target/
+**/rust/target/
 # Zig
 zig-out/
 .zig-cache/
