@@ -1,101 +1,107 @@
 from utils import *
 
-reg_a = 46337277
-reg_b = 0
-reg_c = 0
-program = [(2,4),(1,1),(7,5),(4,4),(1,4),(0,3),(5,5),(3,0)]
-# 0: B = A % 8
-# 1: B = B ^ 1 (flip bit 0)
-# 2: C = A >> B
-# 3: B = B ^ C
-# 4: B = B ^ 4 (flip bit 2)
-# 5: A = A / 8
-# 6: output B
-# 7: if A != 0 goto 0
+# 0: B1 = A1 % 8
+# 1: B2 = B1 ^ 1 (flip bit 0)
+# 2: C1 = A1 >> B2
+# 3: B3 = B2 ^ C1
+# 4: B4 = B3 ^ 4 (flip bit 2)
+# 5: A2 = A1 / 8
+# 6: output B4
+# 7: if A2 != 0 goto 0
 
 # B=k <- B^4=k <- B^C^4=k <- B^(A>>B)^4=k <- B^(A>>(B^1))^5=k
 
-pc = 0
-output = []
+register_a: int
+register_b: int
+register_c: int
+instruction_ptr: int
+program: list[int]
+
 def combo(operand):
-    return [0, 1, 2, 3, reg_a, reg_b, reg_c][operand]
-while pc < len(program):
-    opcode, operand = program[pc]
-    if opcode == 0: # ADV
-        reg_a = reg_a >> combo(operand)
-    elif opcode == 1: # BXL
-        reg_b ^= operand
-    elif opcode == 2: # BST
-        reg_b = combo(operand) % 8
-    elif opcode == 3: # JNZ
-        if reg_a != 0:
-            pc = operand // 2
-            continue
-    elif opcode == 4: # BXC
-        reg_b ^= reg_c
-    elif opcode == 5: # OUT
-        output.append(combo(operand) % 8)
-    elif opcode == 6: # BDV
-        reg_b = reg_a >> combo(operand)
-    elif opcode == 7: # CDV
-        reg_c = reg_a >> combo(operand)
-    pc += 1
+    return [0, 1, 2, 3, register_a, register_b, register_c][operand]
 
-print(",".join(str(i) for i in output))
+def run_one_iteration() -> int:
+    global instruction_ptr, register_a, register_b, register_c
+    output: int
+    while instruction_ptr < len(program):
+        opcode, operand = program[instruction_ptr], program[instruction_ptr + 1]
+        if opcode == 0: # ADV (A divide)
+            register_a = register_a >> combo(operand)
+        elif opcode == 1: # BXL (B xor literal)
+            register_b = register_b ^ operand
+        elif opcode == 2: # BST (B store)
+            register_b = combo(operand) & 0b111
+        elif opcode == 3: # JNZ (jump nonzero)
+            if register_a != 0:
+                instruction_ptr = operand * 2
+                break
+        elif opcode == 4: # BXC (B xor C)
+            register_b = register_b ^ register_c
+        elif opcode == 5: # OUT (output)
+            output = combo(operand) & 0b111
+        elif opcode == 6: # BDV (B divide)
+            register_b = register_a >> combo(operand)
+        elif opcode == 7: # CDV (C divide)
+            register_c = register_a >> combo(operand)
+        instruction_ptr += 2
+    return output
 
-program_flat = [2,4,1,1,7,5,4,4,1,4,0,3,5,5,3,0]
+for line in get_input_lines("day17.txt"):
+    if line.startswith("Register A"):
+        register_a = int(line[12:])
+    elif line.startswith("Register B"):
+        register_b = int(line[12:])
+    elif line.startswith("Register C"):
+        register_c = int(line[12:])
+    elif line.startswith("Program"):
+        program = [int(digit) for digit in line[9:].split(",")]
+instruction_ptr = 0
 
-a_options = None
-for i, digit in enumerate(program_flat):
-    place = i * 3
-    shared7_options = {}
-    for first10 in range(0b10000000000):
-        b = first10 & 0b111
-        result = b ^ 5 ^ ((first10 >> (b ^ 1)) & 0b111)
-        if result == digit:
-            shared7 = first10 & 0b1111111
-            last3_options = shared7_options.get(shared7, [])
-            last3_options.append(first10 >> 7)
-            shared7_options[shared7] = last3_options
-    if a_options is None:
-        a_options = [shared7 | (last3 << 7) for shared7, last3_options in shared7_options.items() for last3 in last3_options]
+outputs: list[int] = []
+while instruction_ptr < len(program):
+    outputs.append(run_one_iteration())
+
+print("[day17p1] Program output values:", ",".join(str(output) for output in outputs))
+
+register_a_options: Optional[list[int]] = None
+for ptr, target_value in enumerate(program):
+    bit_offset: int = ptr * 3
+    shared7_to_next3: dict[int, list[int]] = {}
+    for current10 in range(0b10000000000):
+        register_a = current10
+        instruction_ptr = 0
+        output = run_one_iteration()
+        if output == target_value:
+            shared7 = current10 & 0b1111111
+            next3 = current10 >> 7
+            shared7_to_next3.setdefault(shared7, []).append(next3)
+    if register_a_options is None:
+        # Create the initial list of options for the lowest 10 bits of A
+        register_a_options = [
+            (next3 << 7) | shared7
+            for shared7, next3_options in shared7_to_next3.items()
+            for next3 in next3_options
+        ]
     else:
-        a_options = [a | (last3 << (place + 7)) for a in a_options for last3 in shared7_options.get(a >> place, [])]
+        # Filter the current set of options for A to ensure the 7 highest bits match the
+        # lowest (shared) 7 bits of any 10 bit option just validated, then expand the options
+        # to include the newly found 3 highest bits
+        register_a_options = [
+            (next3 << (bit_offset + 7)) | prev_a
+            for prev_a in register_a_options
+            for next3 in shared7_to_next3.get(prev_a >> bit_offset, [])
+        ]
 
-print(a_options)
-print(min(a_options))
+print("[day17p2] Value of A causing self-replication:", min(register_a_options))
 
-reg_a = min(a_options)
-reg_b = 0
-reg_c = 0
-
-pc = 0
-output = []
-def combo(operand):
-    return [0, 1, 2, 3, reg_a, reg_b, reg_c][operand]
-while pc < len(program):
-    opcode, operand = program[pc]
-    if opcode == 0: # ADV
-        reg_a = reg_a >> combo(operand)
-    elif opcode == 1: # BXL
-        reg_b ^= operand
-    elif opcode == 2: # BST
-        reg_b = combo(operand) % 8
-    elif opcode == 3: # JNZ
-        if reg_a != 0:
-            pc = operand // 2
-            continue
-    elif opcode == 4: # BXC
-        reg_b ^= reg_c
-    elif opcode == 5: # OUT
-        output.append(combo(operand) % 8)
-    elif opcode == 6: # BDV
-        reg_b = reg_a >> combo(operand)
-    elif opcode == 7: # CDV
-        reg_c = reg_a >> combo(operand)
-    pc += 1
-
-print(",".join(str(i) for i in program_flat))
-print(",".join(str(i) for i in output))
+# register_a = min(register_a_options)
+# register_b = 0
+# register_c = 0
+# instruction_ptr = 0
+# outputs = []
+# while instruction_ptr < len(program):
+#     outputs.append(run_one_iteration())
+# print(",".join(str(value) for value in program))
+# print(",".join(str(output) for output in outputs))
 
 print_time_elapsed()
