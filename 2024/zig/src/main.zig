@@ -2,7 +2,7 @@ const std = @import("std");
 
 const day01 = @import("day01.zig").run;
 
-const input_dir = "./input/";
+const input_dir = "../input/";
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};

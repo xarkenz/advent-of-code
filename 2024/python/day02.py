@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 reports = [[int(i) for i in line.split()] for line in get_input_lines("day02.txt")]
 
 safe_count = 0
@@ -15,7 +17,7 @@ for report in reports:
     else:
         safe_count += 1
 
-print("[day02p1] Safe reports:", safe_count)
+print("[02p1] Safe reports:", safe_count)
 
 safe_count = 0
 
@@ -44,6 +46,6 @@ for report in reports:
             safe_count += 1
             break
 
-print("[day02p2] Safe reports:", safe_count)
+print("[02p2] Safe reports:", safe_count)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

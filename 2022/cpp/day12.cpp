@@ -5,7 +5,7 @@
 #include "adventofcode.h"
 
 void day12p1() {
-    std::ifstream input("day12.txt");
+    std::ifstream input(getPath("day12.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day12.txt'\n";
         return;
@@ -59,7 +59,7 @@ void day12p1() {
 }
 
 void day12p2() {
-    std::ifstream input("day12.txt");
+    std::ifstream input(getPath("day12.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day12.txt'\n";
         return;

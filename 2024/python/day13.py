@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 scenarios: list[list[Point]] = []
 for line in get_input_lines("day13.txt"):
     if line.startswith("Button A"):
@@ -34,10 +36,10 @@ for a_move, b_move, prize_pos in scenarios:
     prize_pos += Point(10000000000000, 10000000000000)
     token_count_p2 += calculate_tokens(a_move, b_move, prize_pos)
 
-print("[day13p1] Tokens required:", token_count_p1)
-print("[day13p2] Tokens required:", token_count_p2)
+print("[13p1] Tokens required:", token_count_p1)
+print("[13p2] Tokens required:", token_count_p2)
 
-print_time_elapsed()
+print_time_elapsed(start_time)
 
 # My first solution works and I'm still proud of it so I'm keeping it here
 

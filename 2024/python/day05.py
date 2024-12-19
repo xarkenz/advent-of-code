@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 orderings: list[list[int]] = []
 updates: list[list[int]] = []
 
@@ -38,7 +40,7 @@ for update in updates:
     elif is_reorderable(update):
         reordered_middle_total += update[len(update) // 2]
 
-print("[day05p1] Correctly ordered total:", middle_total)
-print("[day05p2] Reordered total:", reordered_middle_total)
+print("[05p1] Correctly ordered total:", middle_total)
+print("[05p2] Reordered total:", reordered_middle_total)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

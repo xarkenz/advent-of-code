@@ -4,6 +4,23 @@
 
 #include "adventofcode.h"
 
+#include <chrono>
+#include <iomanip>
+
+void measureTime(std::function<void()> callee) {
+    auto start_time = std::chrono::steady_clock::now();
+    callee();
+    auto end_time = std::chrono::steady_clock::now();
+    std::cout << "Time elapsed: "
+        << std::fixed << std::setprecision(3)
+        << (std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count() / 1000.0)
+        << " ms" << std::endl;
+}
+
+std::string getPath(const char* filename) {
+    return std::string("../input/") + filename;
+}
+
 int floorMod(int a, int b) {
     int out = a % b;
     return out < 0 ? out + b : out;
@@ -57,29 +74,29 @@ void Map2D::print(char lead) {
 }
 
 int main() {
-    day01();
-    day02();
-    day03();
-    day04();
-    day05();
-    day06();
-    day07();
-    day08();
-    day09();
-    day10();
-    day11();
-    day12();
-    day13();
-    day14();
-    day15();
-    day16();
-    day17();
-    day18();
-    day19();
-    day20();
-    day21();
-    day22();
-    day23();
-    day24();
-    day25();
+    measureTime(day01);
+    measureTime(day02);
+    measureTime(day03);
+    measureTime(day04);
+    measureTime(day05);
+    measureTime(day06);
+    measureTime(day07);
+    measureTime(day08);
+    measureTime(day09);
+    measureTime(day10);
+    measureTime(day11);
+    measureTime(day12);
+    measureTime(day13);
+    measureTime(day14);
+    measureTime(day15);
+    measureTime(day16);
+    measureTime(day17);
+    measureTime(day18);
+    measureTime(day19);
+    measureTime(day20);
+    measureTime(day21);
+    measureTime(day22);
+    measureTime(day23);
+    measureTime(day24);
+    measureTime(day25);
 }

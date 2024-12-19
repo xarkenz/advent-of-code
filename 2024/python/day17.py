@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 # 0: B1 = A1 % 8
 # 1: B2 = B1 ^ 1 (flip bit 0)
 # 2: C1 = A1 >> B2
@@ -61,7 +63,7 @@ outputs: list[int] = []
 while instruction_ptr < len(program):
     outputs.append(run_one_iteration())
 
-print("[day17p1] Program output values:", ",".join(str(output) for output in outputs))
+print("[17p1] Program output values:", ",".join(str(output) for output in outputs))
 
 register_a_options: Optional[list[int]] = None
 for ptr, target_value in enumerate(program):
@@ -92,7 +94,7 @@ for ptr, target_value in enumerate(program):
             for next3 in shared7_to_next3.get(prev_a >> bit_offset, [])
         ]
 
-print("[day17p2] Value of A causing self-replication:", min(register_a_options))
+print("[17p2] Value of A causing self-replication:", min(register_a_options))
 
 # register_a = min(register_a_options)
 # register_b = 0
@@ -104,4 +106,4 @@ print("[day17p2] Value of A causing self-replication:", min(register_a_options))
 # print(",".join(str(value) for value in program))
 # print(",".join(str(output) for output in outputs))
 
-print_time_elapsed()
+print_time_elapsed(start_time)

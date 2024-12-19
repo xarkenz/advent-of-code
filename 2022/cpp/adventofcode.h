@@ -2,8 +2,11 @@
 // Created by xarkenz on 12/01/22.
 //
 
+#include <cstdlib>
+#include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <vector>
 #include <deque>
 #include <functional>
@@ -33,6 +36,10 @@ void day22();
 void day23();
 void day24();
 void day25();
+
+void measureTime(std::function<void()> callee);
+
+std::string getPath(const char* filename);
 
 int floorMod(int a, int b);
 int64_t floorMod64(int64_t a, int64_t b);

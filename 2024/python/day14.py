@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 init_robots: list[tuple[Point, Point]] = []
 
 for line in get_input_lines("day14.txt"):
@@ -32,7 +34,7 @@ for init_pos, vel in init_robots:
         elif col > center_col:
             q4_count += 1
 
-print("[day14p1] Safety factor after 100 seconds:", q1_count * q2_count * q3_count * q4_count)
+print("[14p1] Safety factor after 100 seconds:", q1_count * q2_count * q3_count * q4_count)
 
 robots: list[tuple[Point, Point]] = init_robots.copy()
 min_s = -1
@@ -59,6 +61,6 @@ for s in range(1, 10000):
             min_avg_dist = avg_dist
             min_robots = robots.copy()
 
-print("[day14p2] Seconds until christmas tree appears:", min_s)
+print("[14p2] Seconds until christmas tree appears:", min_s)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

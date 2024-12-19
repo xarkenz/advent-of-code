@@ -58,7 +58,7 @@ int64_t d21HumanNumber(const std::vector<D21Monkey>& monkeys, int index, int64_t
 }
 
 void day21() {
-    std::ifstream input("day21.txt");
+    std::ifstream input(getPath("day21.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day21.txt'\n";
         return;

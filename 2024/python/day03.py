@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 import re
 
 text = get_input_text("day03.txt")
@@ -11,7 +13,7 @@ for item in matches:
     x, y = item[4:-1].split(",")
     result += int(x) * int(y)
 
-print("[day03p1] Sum of multiplications:", result)
+print("[03p1] Sum of multiplications:", result)
 
 matches: list[str] = re.findall("mul\\([0-9]{1,3},[0-9]{1,3}\\)|do\\(\\)|don't\\(\\)", text)
 
@@ -26,6 +28,6 @@ for item in matches:
         x, y = item[4:-1].split(",")
         result += int(x) * int(y)
 
-print("[day03p2] Sum of enabled multiplications:", result)
+print("[03p2] Sum of enabled multiplications:", result)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

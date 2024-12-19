@@ -36,7 +36,7 @@ int d07SmallestSpace(D07File* dir, int space) {
 }
 
 void day07() {
-    std::ifstream input("day07.txt");
+    std::ifstream input(getPath("day07.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day07.txt'\n";
         return;

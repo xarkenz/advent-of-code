@@ -11,7 +11,7 @@ struct D17State {
 };
 
 void day17() {
-    std::ifstream input("day17.txt");
+    std::ifstream input(getPath("day17.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day17.txt'\n";
         return;

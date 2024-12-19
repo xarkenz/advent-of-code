@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 directions: list[Point] = [
     Point(1, 0),
     Point(0, 1),
@@ -34,7 +36,7 @@ for trailhead in trailheads:
                         new_frontier.append(new_point)
         frontier = new_frontier
 
-print("[day10p1] Trailhead score total:", scores_total)
-print("[day10p2] Trailhead rating total:", ratings_total)
+print("[10p1] Trailhead score total:", scores_total)
+print("[10p2] Trailhead rating total:", ratings_total)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

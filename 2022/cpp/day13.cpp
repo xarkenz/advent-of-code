@@ -52,7 +52,7 @@ bool d13IsInOrder(std::string left, std::string right) {
 }
 
 void day13() {
-    std::ifstream input("day13.txt");
+    std::ifstream input(getPath("day13.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day13.txt'\n";
         return;

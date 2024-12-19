@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 frequency_antennas: dict[str, list[Point]] = {}
 
 row_count: int = 0
@@ -31,7 +33,7 @@ for antennas in frequency_antennas.values():
             if is_in_bounds(test2):
                 antinodes.add(test2)
 
-print("[day08p1] Unique antinodes:", len(antinodes))
+print("[08p1] Unique antinodes:", len(antinodes))
 
 for antennas in frequency_antennas.values():
     for i in range(len(antennas)):
@@ -48,6 +50,6 @@ for antennas in frequency_antennas.values():
                 antinodes.add(test2)
                 test2 -= diff
 
-print("[day08p2] Unique antinodes:", len(antinodes))
+print("[08p2] Unique antinodes:", len(antinodes))
 
-print_time_elapsed()
+print_time_elapsed(start_time)

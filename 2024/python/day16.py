@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 grid: TileMap = get_input_tile_map("day16.txt")
 
 start_pos: Point
@@ -51,7 +53,7 @@ while frontier:
     right_dir = prev_dir.rotate_90_cw()
     frontier.push(FrontierPoint(score + 1001, path + [path[-1] + right_dir], right_dir))
 
-print("[day16p1] Lowest possible score:", lowest_score)
-print("[day16p2] Tiles on best paths:", len(best_paths_points))
+print("[16p1] Lowest possible score:", lowest_score)
+print("[16p2] Tiles on best paths:", len(best_paths_points))
 
-print_time_elapsed()
+print_time_elapsed(start_time)

@@ -21,7 +21,7 @@ struct D23Elf {
 };
 
 void day23() {
-    std::ifstream input("day23.txt");
+    std::ifstream input(getPath("day23.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day23.txt'\n";
         return;

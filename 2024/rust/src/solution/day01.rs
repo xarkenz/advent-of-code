@@ -19,10 +19,10 @@ pub fn run() {
     let total_distance: u32 = std::iter::zip(&left_list, &right_list)
         .map(|(&left, &right)| left.abs_diff(right))
         .sum();
-    println!("[day01p1] Total distance: {total_distance}");
+    println!("[01p1] Total distance: {total_distance}");
 
     let similarity_score: u32 = left_list.iter()
         .map(|&left| left * right_list.iter().filter(|&right| *right == left).count() as u32)
         .sum();
-    println!("[day01p2] Similarity score: {similarity_score}");
+    println!("[01p2] Similarity score: {similarity_score}");
 }

@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 dir_chars: dict[str, Point] = {
     "v": Point(1, 0),
     ">": Point(0, 1),
@@ -62,7 +64,7 @@ for point, tile in grid:
     if tile == "O":
         gps_coord_sum += 100 * point.row + point.col
 
-print("[day15p1] Sum of GPS coordinates:", gps_coord_sum)
+print("[15p1] Sum of GPS coordinates:", gps_coord_sum)
 
 def print_grid(grid: TileMap, robot: Point):
     grid.put(robot, "@")
@@ -126,7 +128,7 @@ for point, tile in grid_p2:
     if tile == "[":
         gps_coord_sum += 100 * point.row + point.col
 
-print("[day15p2] Sum of scaled-up GPS coordinates:", gps_coord_sum)
+print("[15p2] Sum of scaled-up GPS coordinates:", gps_coord_sum)
 
 # i = input()
 # while i:
@@ -141,4 +143,4 @@ print("[day15p2] Sum of scaled-up GPS coordinates:", gps_coord_sum)
 #     print_grid()
 #     i = input()
 
-print_time_elapsed()
+print_time_elapsed(start_time)

@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 grid = get_input_tile_map("day12.txt")
 checked_regions: set[Point] = set()
 
@@ -57,7 +59,7 @@ while start_queue:
     total_price_p1 += len(region) * perimeter
     total_price_p2 += len(region) * side_count
 
-print("[day12p1] Total fence price:", total_price_p1)
-print("[day12p2] Total fence price:", total_price_p2)
+print("[12p1] Total fence price:", total_price_p1)
+print("[12p2] Total fence price:", total_price_p2)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

@@ -152,7 +152,7 @@ void d22WrapCube(Map2D& map, int& facing, Position& position) {
 }
 
 void day22() {
-    std::ifstream input("day22.txt");
+    std::ifstream input(getPath("day22.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day22.txt'\n";
         return;

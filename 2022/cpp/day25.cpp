@@ -25,7 +25,7 @@ std::string d25FromInt(int64_t input) {
 }
 
 void day25() {
-    std::ifstream input("day25.txt");
+    std::ifstream input(getPath("day25.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day25.txt'\n";
         return;

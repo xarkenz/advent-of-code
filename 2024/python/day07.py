@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 from math import floor, log10
 
 equations: list[tuple[int, list[int]]] = []
@@ -50,7 +52,7 @@ for goal, operands in equations:
     if check_p2(goal, operands[0], operands, 1):
         total_calibration_p2 += goal
 
-print("[day07p1] Total calibration result:", total_calibration_p1)
-print("[day07p2] Total calibration result:", total_calibration_p2)
+print("[07p1] Total calibration result:", total_calibration_p1)
+print("[07p2] Total calibration result:", total_calibration_p2)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

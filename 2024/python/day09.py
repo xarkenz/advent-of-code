@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 blocks: list[int] = []
 
 is_file_block = True
@@ -28,7 +30,7 @@ while True:
         blocks_p1.append(file_id)
         break
 
-print(sum(pos * file_id for pos, file_id in enumerate(blocks_p1)))
+print("[09p1] Filesystem checksum:", sum(pos * file_id for pos, file_id in enumerate(blocks_p1)))
 
 for pos in reversed(file_starts):
     file_id = blocks[pos]
@@ -46,6 +48,6 @@ for pos in reversed(file_starts):
     except ValueError:
         pass
 
-print(sum(pos * file_id for pos, file_id in enumerate(blocks) if file_id is not None))
+print("[09p2] Filesystem checksum:", sum(pos * file_id for pos, file_id in enumerate(blocks) if file_id is not None))
 
-print_time_elapsed()
+print_time_elapsed(start_time)

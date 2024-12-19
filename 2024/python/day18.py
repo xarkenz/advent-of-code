@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 falling_bytes: list[Point] = []
 for line in get_input_lines("day18.txt"):
     x, y = line.split(",")
@@ -43,7 +45,7 @@ while frontier:
         if new_point not in first_1k and new_point not in traveled_points:
             frontier.push(FrontierPoint(steps + 1, path + [new_point]))
 
-print(min_steps)
+print("[18p1] Minimum steps after 1K fallen:", min_steps)
 
 @dataclass(order=True)
 class FrontierPoint2:
@@ -73,6 +75,7 @@ for fallen_byte in falling_bytes[1024:]:
     else:
         blocking_byte = fallen_byte
         break
-print(blocking_byte)
 
-print_time_elapsed()
+print(f"[18p2] Location of blocking byte: {blocking_byte.col},{blocking_byte.row}")
+
+print_time_elapsed(start_time)

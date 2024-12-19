@@ -9,7 +9,7 @@ struct D15Sensor {
 };
 
 void day15() {
-    std::ifstream input("day15.txt");
+    std::ifstream input(getPath("day15.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day15.txt'\n";
         return;

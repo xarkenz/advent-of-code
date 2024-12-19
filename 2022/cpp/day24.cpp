@@ -111,7 +111,7 @@ void d24GoTo(D24BlizzardMap& map, int& minutesElapsed, Position start, Position 
 }
 
 void day24() {
-    std::ifstream input("day24.txt");
+    std::ifstream input(getPath("day24.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day24.txt'\n";
         return;

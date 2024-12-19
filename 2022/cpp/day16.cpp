@@ -57,7 +57,7 @@ int d16MaximumPressure2(const std::vector<D16Valve>& valves, size_t start, size_
 }
 
 void day16() {
-    std::ifstream input("day16.txt");
+    std::ifstream input(getPath("day16.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day16.txt'\n";
         return;

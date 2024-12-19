@@ -49,7 +49,7 @@ pub fn run(input_path: []const u8, allocator: std.mem.Allocator) !void {
         total_distance += @intCast(@abs(left - right));
     }
 
-    try std_out.print("[day01p1] Total distance: {d}\n", .{total_distance});
+    try std_out.print("[01p1] Total distance: {d}\n", .{total_distance});
 
     var similarity_score: i32 = 0;
     for (left_nums.items) |left| {
@@ -60,5 +60,5 @@ pub fn run(input_path: []const u8, allocator: std.mem.Allocator) !void {
         }
     }
 
-    try std_out.print("[day01p2] Similarity score: {d}\n", .{similarity_score});
+    try std_out.print("[01p2] Similarity score: {d}\n", .{similarity_score});
 }

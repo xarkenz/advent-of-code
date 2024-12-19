@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 directions: list[Point] = [
     Point(1, 0),
     Point(0, 1),
@@ -75,7 +77,7 @@ while True:
         current_tile = next_tile
         guard_pos = next_guard_pos
 
-print("[day06p1] Distinct tiles visited:", sum(tile == "X" for _, tile in path_grid))
-print("[day06p2] Loop-causing obstructions:", len(looping_walls))
+print("[06p1] Distinct tiles visited:", sum(tile == "X" for _, tile in path_grid))
+print("[06p2] Loop-causing obstructions:", len(looping_walls))
 
-print_time_elapsed()
+print_time_elapsed(start_time)

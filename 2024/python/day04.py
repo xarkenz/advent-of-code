@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 grid: TileMap = get_input_tile_map("day04.txt")
 
 def check_xmas(grid: TileMap, point: Point, direction: Point) -> bool:
@@ -38,7 +40,7 @@ for point, _ in grid:
     if check_x_mas(grid, point):
         x_mas_count += 1
 
-print("[day04p1] XMAS appearances:", xmas_count)
-print("[day04p2] X-MAS appearances:", x_mas_count)
+print("[04p1] XMAS appearances:", xmas_count)
+print("[04p2] X-MAS appearances:", x_mas_count)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

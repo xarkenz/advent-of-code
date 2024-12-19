@@ -1,5 +1,7 @@
 from utils import *
 
+start_time: float = get_start_time()
+
 init_stones = [int(i) for i in get_input_text("day11.txt").split()]
 
 # Very devious way to have a static variable in a function because default values are only instantiated once
@@ -25,7 +27,7 @@ for init_stone in init_stones:
     stone_count_p1 += get_stone_count(init_stone, 25)
     stone_count_p2 += get_stone_count(init_stone, 75)
 
-print("[day11p1] Stones after 25 blinks:", stone_count_p1)
-print("[day11p2] Stones after 75 blinks:", stone_count_p2)
+print("[11p1] Stones after 25 blinks:", stone_count_p1)
+print("[11p2] Stones after 75 blinks:", stone_count_p2)
 
-print_time_elapsed()
+print_time_elapsed(start_time)

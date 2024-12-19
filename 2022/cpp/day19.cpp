@@ -87,7 +87,7 @@ int d19MaxGeodes(const D19Parameters& parameters, int maxGeodes, const D19State&
 }
 
 void day19() {
-    std::ifstream input("day19.txt");
+    std::ifstream input(getPath("day19.txt"));
     if (!input.is_open()) {
         std::cerr << "Unable to open 'day19.txt'\n";
         return;
