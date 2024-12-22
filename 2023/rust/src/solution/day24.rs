@@ -41,49 +41,124 @@ pub fn run() {
 
     println!("[24p1] {collided_xy}");
 
-    let mut trajectories = Vec::from_iter(trajectories.iter()
-        .map(|&(FPoint3D(x, y, z), FPoint3D(dx, dy, dz))| (Point3D(x as i64, y as i64, z as i64), Point3D(dx as i64, dy as i64, dz as i64))));
-    trajectories.sort_unstable_by_key(|(_, velocity)| velocity.manhattan_distance_to(Point3D::origin()));
-    let (position_1, velocity_1) = trajectories[trajectories.len() - 1];
-    let (position_2, velocity_2) = trajectories[trajectories.len() - 2];
+    let mut trajectories = Vec::new();
 
-    let mut t1 = 1;
-    let mut t2 = 0;
-    
-    let rock_position = 'search_loop: loop {
-        for (t1, t2) in [(t1, t2), (t2, t1)] {
-            let dt = t2 - t1;
-            let x1 = position_1.x() as i128 + velocity_1.x() as i128 * t1;
-            let y1 = position_1.y() as i128 + velocity_1.y() as i128 * t1;
-            let z1 = position_1.z() as i128 + velocity_1.z() as i128 * t1;
-            let x2 = position_2.x() as i128 + velocity_2.x() as i128 * t2;
-            let y2 = position_2.y() as i128 + velocity_2.y() as i128 * t2;
-            let z2 = position_2.z() as i128 + velocity_2.z() as i128 * t2;
+    for line in get_input("day24.txt").lines().map(expect_line) {
+        let (position, velocity) = line.split_once(" @ ").unwrap();
 
-            // println!("{t1}, {t2} : {}", trajectories.iter().map(|&(position, velocity)| (x2 - x1 - velocity.x() as i128 * dt) * (y2 * t1 - y1 * t2 + position.y() as i128 * dt) - (y2 - y1 - velocity.y() as i128 * dt) * (x2 * t1 - x1 * t2 + position.x() as i128 * dt)).sum::<i128>());
+        let mut position = position.split(", ");
+        let position = Point3D(
+            position.next().unwrap().parse::<i64>().unwrap(),
+            position.next().unwrap().parse::<i64>().unwrap(),
+            position.next().unwrap().parse::<i64>().unwrap(),
+        );
 
-            if trajectories.iter().all(|&(position, velocity)| {
-                (x2 - x1 - velocity.x() as i128 * dt) * (y2 * t1 - y1 * t2 + position.y() as i128 * dt)
-                == (y2 - y1 - velocity.y() as i128 * dt) * (x2 * t1 - x1 * t2 + position.x() as i128 * dt)
-            }) {
-                let rock_position = Point3D(
-                    ((x1 * t2 - x2 * t1) / dt) as i64,
-                    ((y1 * t2 - y2 * t1) / dt) as i64,
-                    ((z1 * t2 - z2 * t1) / dt) as i64,
-                );
-                break 'search_loop rock_position;
-            }
-        }
+        let mut velocity = velocity.split(", ");
+        let velocity = Point3D(
+            velocity.next().unwrap().parse::<i64>().unwrap(),
+            velocity.next().unwrap().parse::<i64>().unwrap(),
+            velocity.next().unwrap().parse::<i64>().unwrap(),
+        );
 
-        if t2 == 0 {
-            t2 = t1;
-            t1 += 1;
+        trajectories.push((position, velocity));
+    }
+
+    let mut x_velocities: BTreeMap<i64, Vec<usize>> = BTreeMap::new();
+    let mut y_velocities: BTreeMap<i64, Vec<usize>> = BTreeMap::new();
+    let mut z_velocities: BTreeMap<i64, Vec<usize>> = BTreeMap::new();
+
+    for (index, (position, velocity)) in trajectories.iter().enumerate() {
+        if let Some(indices) = x_velocities.get_mut(&velocity.x()) {
+            indices.push(index);
         }
         else {
-            t2 -= 1;
+            x_velocities.insert(velocity.x(), Vec::new());
         }
-    };
+        if let Some(indices) = y_velocities.get_mut(&velocity.y()) {
+            indices.push(index);
+        }
+        else {
+            y_velocities.insert(velocity.y(), Vec::new());
+        }
+        if let Some(indices) = z_velocities.get_mut(&velocity.z()) {
+            indices.push(index);
+        }
+        else {
+            z_velocities.insert(velocity.z(), Vec::new());
+        }
+    }
+    
+    for indices in x_velocities.values() {
+        if indices.len() >= 3 {
+            let (pos1, vel1) = trajectories[indices[0]];
+            let (pos2, vel2) = trajectories[indices[1]];
+            let (pos3, vel3) = trajectories[indices[2]];
+            let x21 = pos2.x() - pos1.x();
+            let x13 = pos1.x() - pos3.x();
+            let x23 = pos2.x() - pos3.x();
+            println!("({x21}t3 + {x13}t2) / {x23}");
+            let (t2, t3) = 'time: {
+                for t3 in -100..=100 {
+                    for t2 in -100..=100 {
+                        if t2 == 0 && t3 == 0 {
+                            continue;
+                        }
+                        let numerator = x21 * t3 + x13 * t2;
+                        if numerator % x23 == 0 {
+                            break 'time (t2, t3);
+                        }
+                    }
+                }
+                (0, 0)
+            };
+            println!("{t2} {t3}");
+            break;
+        }
+    }
 
-    let coordinate_sum = rock_position.manhattan_distance_to(Point3D::origin());
-    println!("[24p2] Rock starting position: {rock_position} => {coordinate_sum}")
+    // let mut trajectories = Vec::from_iter(trajectories.iter()
+    //     .map(|&(FPoint3D(x, y, z), FPoint3D(dx, dy, dz))| (Point3D(x as i64, y as i64, z as i64), Point3D(dx as i64, dy as i64, dz as i64))));
+    // trajectories.sort_unstable_by_key(|(_, velocity)| velocity.manhattan_distance_to(Point3D::origin()));
+    // let (position_1, velocity_1) = trajectories[trajectories.len() - 1];
+    // let (position_2, velocity_2) = trajectories[trajectories.len() - 2];
+
+    // let mut t1 = 1;
+    // let mut t2 = 0;
+    
+    // let rock_position = 'search_loop: loop {
+    //     for (t1, t2) in [(t1, t2), (t2, t1)] {
+    //         let dt = t2 - t1;
+    //         let x1 = position_1.x() as i128 + velocity_1.x() as i128 * t1;
+    //         let y1 = position_1.y() as i128 + velocity_1.y() as i128 * t1;
+    //         let z1 = position_1.z() as i128 + velocity_1.z() as i128 * t1;
+    //         let x2 = position_2.x() as i128 + velocity_2.x() as i128 * t2;
+    //         let y2 = position_2.y() as i128 + velocity_2.y() as i128 * t2;
+    //         let z2 = position_2.z() as i128 + velocity_2.z() as i128 * t2;
+
+    //         // println!("{t1}, {t2} : {}", trajectories.iter().map(|&(position, velocity)| (x2 - x1 - velocity.x() as i128 * dt) * (y2 * t1 - y1 * t2 + position.y() as i128 * dt) - (y2 - y1 - velocity.y() as i128 * dt) * (x2 * t1 - x1 * t2 + position.x() as i128 * dt)).sum::<i128>());
+
+    //         if trajectories.iter().all(|&(position, velocity)| {
+    //             (x2 - x1 - velocity.x() as i128 * dt) * (y2 * t1 - y1 * t2 + position.y() as i128 * dt)
+    //             == (y2 - y1 - velocity.y() as i128 * dt) * (x2 * t1 - x1 * t2 + position.x() as i128 * dt)
+    //         }) {
+    //             let rock_position = Point3D(
+    //                 ((x1 * t2 - x2 * t1) / dt) as i64,
+    //                 ((y1 * t2 - y2 * t1) / dt) as i64,
+    //                 ((z1 * t2 - z2 * t1) / dt) as i64,
+    //             );
+    //             break 'search_loop rock_position;
+    //         }
+    //     }
+
+    //     if t2 == 0 {
+    //         t2 = t1;
+    //         t1 += 1;
+    //     }
+    //     else {
+    //         t2 -= 1;
+    //     }
+    // };
+
+    // let coordinate_sum = rock_position.manhattan_distance_to(Point3D::origin());
+    // println!("[24p2] Rock starting position: {rock_position} => {coordinate_sum}")
 }

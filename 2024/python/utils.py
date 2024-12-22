@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Iterator, Union, TypeVar, TypeAlias, Generic, Optional
+from typing import *
 import time
 import heapq
 
@@ -101,9 +101,10 @@ class Point:
         return (self.row, self.col).__hash__()
 
 class TileMapRow:
-    def __init__(self, filler_tile: str = " "):
+    def __init__(self, row: int, filler_tile: str = " "):
         self.filler_tile: str = filler_tile
-        self.tiles: str = ""
+        self.row: int = row
+        self.tiles: list[str] = []
         self.first_col: int = 0
     
     def min_col(self) -> int:
@@ -120,43 +121,36 @@ class TileMapRow:
             return self.tiles[col - self.first_col]
         else:
             return self.filler_tile
-    
-    def __getitem__(self, col: Union[int, slice]) -> str:
-        if isinstance(col, slice):
-            start = col.start if col.start is not None else (self.min_col() if col.step is None or col.step > 0 else self.max_col())
-            stop = col.stop if col.stop is not None else (self.max_col() + 1 if col.step is None or col.step > 0 else self.min_col() - 1)
-            step = col.step if col.step is not None else 1
-            return "".join(self.get(slice_col) for slice_col in range(start, stop, step))
-        else:
-            return self.get(col)
 
-    def put(self, col: int, tiles: str) -> str:
+    def put(self, col: int, tiles: Sequence[str]):
         if len(self.tiles) == 0:
             self.first_col = col
-            self.tiles = tiles
-        else:
-            # eugh
-            new_tiles = ""
-            if self.first_col < col:
-                new_first_col = self.first_col
-                new_tiles += self.tiles[:min(len(self.tiles), col - self.first_col)]
-                if new_first_col + len(new_tiles) < col:
-                    new_tiles += self.filler_tile * (col - (new_first_col + len(new_tiles)))
+            self.tiles.extend(tiles)
+        elif len(tiles) > 0:
+            index = col - self.first_col
+            if index < 0:
+                self.tiles[0:0] = (self.filler_tile for _ in range(-index))
+                self.first_col = col
+                index = 0
+            elif index > len(self.tiles):
+                self.tiles.extend(self.filler_tile for _ in range(index - len(self.tiles)))
+            if len(tiles) == 1:
+                if index == len(self.tiles):
+                    self.tiles.append(tiles[0])
+                else:
+                    self.tiles[index] = tiles[0]
             else:
-                new_first_col = col
-            new_tiles += tiles
-            if new_first_col + len(new_tiles) < self.first_col + len(self.tiles):
-                if new_first_col + len(new_tiles) < self.first_col:
-                    new_tiles += self.filler_tile * (self.first_col - (new_first_col + len(new_tiles)))
-                new_tiles += self.tiles[max(0, (new_first_col + len(new_tiles)) - self.first_col):]
-            self.first_col = new_first_col
-            self.tiles = new_tiles
+                end_index = min(len(self.tiles), index + len(tiles))
+                self.tiles[index : end_index] = tiles
     
     def copy(self) -> "TileMapRow":
-        copy = TileMapRow(self.filler_tile)
-        copy.tiles = self.tiles
+        copy = TileMapRow(self.row, self.filler_tile)
+        copy.tiles = self.tiles.copy()
         copy.first_col = self.first_col
         return copy
+    
+    def __iter__(self) -> Iterator[tuple[Point, str]]:
+        return iter((Point(self.row, col), tile) for col, tile in zip(self.col_range(), self.tiles) if tile != self.filler_tile)
 
 class TileMap:
     def __init__(self, filler_tile: str = " "):
@@ -190,9 +184,9 @@ class TileMap:
         row = point[0]
         col = point[1]
         if row > self.max_row():
-            self.rows.extend(TileMapRow(self.filler_tile) for _ in range(row - self.max_row()))
+            self.rows.extend(TileMapRow(self.max_row() + 1 + offset, self.filler_tile) for offset in range(row - self.max_row()))
         elif row < self.min_row():
-            self.rows[0:0] = (TileMapRow(self.filler_tile) for _ in range(self.min_row() - row))
+            self.rows[0:0] = (TileMapRow(row + offset, self.filler_tile) for offset in range(self.min_row() - row))
         self.rows[row].put(col, tiles)
         self.cached_min_col = min(self.cached_min_col, self.rows[row].min_col())
         self.cached_max_col = max(self.cached_max_col, self.rows[row].max_col())
@@ -206,9 +200,7 @@ class TileMap:
         return copy
     
     def __iter__(self) -> Iterator[tuple[Point, str]]:
-        points_iter = (Point(self.first_row + row_index, col) for row_index in range(len(self.rows)) for col in self.rows[row_index].col_range())
-        raw_iter = ((point, self.get(point)) for point in points_iter)
-        return ((point, tile) for point, tile in raw_iter if tile != self.filler_tile)
+        return iter(item for row in self.rows for item in row)
     
     def __str__(self) -> str:
         return "\n".join(tile_row[self.min_col() : self.max_col() + 1] for tile_row in self.rows)
