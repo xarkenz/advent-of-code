@@ -38,14 +38,6 @@ for index, point in enumerate(path):
 
 print(saves_100)
 
-# for point, tile in grid:
-#     if tile == "#":
-#         adj_points = [point + direction for direction in directions if point + direction in path_indices]
-#         for i, adj1 in enumerate(adj_points[:-1]):
-#             for adj2 in adj_points[i + 1:]:
-#                 if abs(path_indices[adj1] - path_indices[adj2]) >= 100:
-#                     saves_100 += 1
-
 saves_100 = 0
 for index1, point1 in enumerate(path[:-100]):
     for offset2, point2 in enumerate(path[index1 + 100:]):
