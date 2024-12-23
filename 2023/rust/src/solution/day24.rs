@@ -88,31 +88,76 @@ pub fn run() {
         }
     }
     
-    for indices in x_velocities.values() {
-        if indices.len() >= 3 {
-            let (pos1, vel1) = trajectories[indices[0]];
-            let (pos2, vel2) = trajectories[indices[1]];
-            let (pos3, vel3) = trajectories[indices[2]];
-            let x21 = pos2.x() - pos1.x();
-            let x13 = pos1.x() - pos3.x();
-            let x23 = pos2.x() - pos3.x();
-            println!("({x21}t3 + {x13}t2) / {x23}");
-            let (t2, t3) = 'time: {
-                for t3 in -100..=100 {
-                    for t2 in -100..=100 {
-                        if t2 == 0 && t3 == 0 {
-                            continue;
-                        }
-                        let numerator = x21 * t3 + x13 * t2;
-                        if numerator % x23 == 0 {
-                            break 'time (t2, t3);
-                        }
-                    }
+    // fn x(point: Point3D) -> i64 {
+    //     point.x()
+    // }
+    // fn y(point: Point3D) -> i64 {
+    //     point.y()
+    // }
+
+    for (&x_vel, indices) in &x_velocities {
+        // if indices.len() < 3 {
+        //     continue;
+        // }
+        if indices.len() < 2 {
+            continue;
+        }
+        for &index in indices {
+            println!("{:?}", trajectories[index]);
+        }
+        for &index1 in indices {
+            for &index2 in indices {
+                // if index2 == index1 {
+                //     continue;
+                // }
+                if index2 <= index1 {
+                    continue;
                 }
-                (0, 0)
-            };
-            println!("{t2} {t3}");
-            break;
+                let (pos1, vel1) = trajectories[index1];
+                let (pos2, vel1) = trajectories[index2];
+                // for &index3 in indices {
+                //     if index3 == index2 || index3 == index1 {
+                //         continue;
+                //     }
+                //     let (pos1, vel1) = trajectories[index1];
+                //     let (pos2, vel2) = trajectories[index2];
+                //     let (pos3, vel3) = trajectories[index3];
+                //     let x21 = x(pos2) - x(pos1);
+                //     let x13 = x(pos1) - x(pos3);
+                //     let x23 = x(pos2) - x(pos3);
+                //     let gcd1 = gcd(x21.unsigned_abs(), x13.unsigned_abs());
+                //     let gcd2 = gcd(x13.unsigned_abs(), x23.unsigned_abs());
+                //     let gcd3 = gcd(x23.unsigned_abs(), x21.unsigned_abs());
+                //     let divisor = gcd1.min(gcd2).min(gcd3) as i64;
+                //     let x21 = x21 / divisor;
+                //     let x13 = x13 / divisor;
+                //     let x23 = x23 / divisor;
+                //     for t3_factor in -10000..=10000 {
+                //         for t2_factor in -10000..=10000 {
+                //             if t2_factor == t3_factor {
+                //                 continue;
+                //             }
+                //             let t1 = (x21 * t3_factor + x13 * t2_factor) as i128;
+                //             let t2 = (t2_factor * x23) as i128;
+                //             let t3 = (t3_factor * x23) as i128;
+                //             if t1 <= 0 || t2 <= 0 || t3 <= 0 {
+                //                 continue;
+                //             }
+                //             // (y2-y3)*t1 + (y3-y1)*t2 + (y1-y2)*t3 + (v3-v2)*t2*t3 + (v1-v3)*t1*t3 + (v2-v1)*t1*t2 = 0
+                //             let y23 = (y(pos2) - y(pos3)) as i128;
+                //             let y31 = (y(pos3) - y(pos1)) as i128;
+                //             let y12 = (y(pos1) - y(pos2)) as i128;
+                //             let v32 = (y(vel3) - y(vel2)) as i128;
+                //             let v13 = (y(vel1) - y(vel3)) as i128;
+                //             let v21 = (y(vel2) - y(vel1)) as i128;
+                //             let test = (y23 * t1) + (y31 * t2) + (y12 * t3) + (v32 * t3 * t2) + (v13 * t1 * t3) + (v21 * t2 * t1);
+                //             if test == 0 {
+                //                 println!("{t1} {t2} {t3}");
+                //             }
+                //         }
+                //     }
+                // }
+            }
         }
     }
 
