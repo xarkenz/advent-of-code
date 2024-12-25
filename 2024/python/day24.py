@@ -2,7 +2,23 @@ from utils import *
 
 from collections import deque
 from copy import deepcopy
-import itertools
+
+#             ___
+# x00 ----@--\\  '-, result
+#         |  ||XOR  >------------------------------------ z00
+# y00 --@-|--//__,-'
+#       | |  ______
+#       | +--|     \ carry         ___
+#       |    | AND  |----------@--\\  '-, result
+#       +----|_____/           |  ||XOR  >--------------- z01
+#             ___            +-|--//__,-'
+# x01 ----@--\\  '-, rawadd  | |  ______
+#         |  ||XOR  >--------@ +--|     \ checkcarry1
+# y01 --@-|--//__,-'         |    | AND  |--,  ____    
+#       | |  ______          +----|_____/   '--\   '-, carry
+#       | +--|     \ checkcarry2                | OR  >--
+#       |    | AND  |--------------------------/___,-' 
+#       +----|_____/
 
 RESULT = "result"
 CARRY = "carry"
