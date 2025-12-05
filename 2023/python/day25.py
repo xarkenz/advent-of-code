@@ -1,11 +1,11 @@
+from utils import *
 import random
 
 components: dict[str, list[str]] = {}
 
-with open("../input/day25.txt") as f:
-    for line in f.readlines():
-        component, adjacencies = line.strip().split(": ")
-        components[component] = adjacencies.split()
+for line in get_input_lines("day25.txt"):
+    component, adjacencies = line.split(": ")
+    components[component] = adjacencies.split()
 
 for component, adjacencies in components.copy().items():
     for next_group in adjacencies:
