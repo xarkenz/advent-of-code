@@ -35,8 +35,7 @@ def main(base_dir: str, year: str, language: str, day: str = "") -> None:
     language_dir: str = os.path.join(base_dir, year, language)
     if not os.path.isdir(language_dir):
         raise NotADirectoryError(language + " is not supported in year " + year)
-    run_commands: list[list[str]] = get_run_commands(language, language_dir, day)
-    for command in run_commands:
+    for command in get_run_commands(language, language_dir, day):
         subprocess.run(command, cwd=language_dir)
 
 if __name__ == "__main__":
