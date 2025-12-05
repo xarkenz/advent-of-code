@@ -14,6 +14,7 @@ adjacents: list[Point] = [
 ]
 
 tile_map: TileMap = get_input_tile_map("day04.txt")
+paper_rolls: set[Point] = {point for point, tile in tile_map if tile == '@'}
 
 initial_accessible_count: int = None
 removable_count: int = 0
@@ -22,12 +23,10 @@ accessible_points: list[Point] = None
 while accessible_points or accessible_points is None:
     accessible_points = []
 
-    for point, tile in tile_map:
-        if tile != "@":
-            continue
+    for point in paper_rolls:
         adjacent_rolls = 0
         for adjacent in adjacents:
-            if tile_map.get(point + adjacent) == "@":
+            if point + adjacent in paper_rolls:
                 adjacent_rolls += 1
                 if adjacent_rolls >= 4:
                     break
@@ -39,7 +38,7 @@ while accessible_points or accessible_points is None:
     removable_count += len(accessible_points)
 
     for point in accessible_points:
-        tile_map.put(point, ".")
+        paper_rolls.remove(point)
 
 print("[04p1] Initially accessible paper rolls:", initial_accessible_count)
 print("[04p2] Removable paper rolls:", removable_count)
