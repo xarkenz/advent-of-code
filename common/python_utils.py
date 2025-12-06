@@ -16,9 +16,11 @@ def get_input_text(filename: str) -> str:
     with open(f"../input/{filename}") as input_file:
         return input_file.read()
 
-def get_input_lines(filename: str) -> list[str]:
+def get_input_lines(filename: str, *, strip: bool = True) -> list[str]:
     with open(f"../input/{filename}") as input_file:
-        lines = [line.strip() for line in input_file.readlines()]
+        lines = input_file.readlines()
+        if strip:
+            lines = [line.strip() for line in lines]
         while lines and not lines[-1]:
             lines.pop()
         return lines
