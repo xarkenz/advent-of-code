@@ -1,7 +1,5 @@
 from utils import *
 
-import itertools
-
 start_time: float = get_start_time()
 
 measurements: list[int] = [int(measurement) for measurement in get_input_lines("day01.txt")]
