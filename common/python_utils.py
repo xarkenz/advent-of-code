@@ -25,8 +25,8 @@ def get_input_lines(filename: str, *, strip: bool = True) -> list[str]:
             lines.pop()
         return lines
 
-def get_input_tile_map(filename: str) -> "TileMap":
-    tile_map = TileMap()
+def get_input_tile_map(filename: str, filler_tile: str = " ") -> "TileMap":
+    tile_map = TileMap(filler_tile)
     for row, line in enumerate(get_input_lines(filename)):
         tile_map.put((row, 0), line)
     return tile_map

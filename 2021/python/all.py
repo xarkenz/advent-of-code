@@ -7,5 +7,11 @@ start_time: float = get_start_time()
 import day01
 import day02
 import day03
+import day04
+import day05
+import day06
+import day07
+import day08
+import day09
 
 print_time_elapsed(start_time, "Total runtime")
