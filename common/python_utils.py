@@ -63,7 +63,10 @@ class MinHeap(Generic[_T]):
 
     def peek(self) -> _T:
         return self.items[0]
-    
+
+    def __len__(self) -> int:
+        return len(self.items)
+
     def __bool__(self) -> bool:
         return bool(self.items)
 
