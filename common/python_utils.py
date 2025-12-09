@@ -173,11 +173,17 @@ class TileMap:
     def max_row(self) -> int:
         return self.first_row + len(self.rows) - 1
 
+    def row_range(self) -> range:
+        return range(self.min_row(), self.max_row() + 1)
+
     def min_col(self) -> int:
         return self.cached_min_col
     
     def max_col(self) -> int:
         return self.cached_max_col
+
+    def col_range(self) -> range:
+        return range(self.min_col(), self.max_col() + 1)
 
     def get(self, point: PointLike) -> str:
         row = point[0]
@@ -210,7 +216,7 @@ class TileMap:
         return iter(item for row in self.rows for item in row)
     
     def __str__(self) -> str:
-        return "\n".join(tile_row[self.min_col() : self.max_col() + 1] for tile_row in self.rows)
+        return "\n".join("".join(tile_row.get(col) for col in self.col_range()) for tile_row in self.rows)
 
 @dataclass
 class Interval:
