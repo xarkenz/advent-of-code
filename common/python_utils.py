@@ -4,6 +4,7 @@ import time
 import heapq
 import itertools
 import enum
+from fractions import Fraction
 
 # General Utilities
 
@@ -55,10 +56,10 @@ class MinHeap(Generic[_T]):
             self.items = items
         else:
             self.items = []
-    
+
     def push(self, item: _T) -> None:
         heapq.heappush(self.items, item)
-    
+
     def pop(self) -> _T:
         return heapq.heappop(self.items)
 
@@ -82,10 +83,10 @@ class Point:
 
     def manhattan_distance_to(self, other: PointLike) -> int:
         return abs(self.row - other[0]) + abs(self.col - other[1])
-    
+
     def rotate_90_cw(self) -> "Point":
         return Point(self.col, -self.row)
-    
+
     def rotate_90_ccw(self) -> "Point":
         return Point(-self.col, self.row)
 
@@ -97,13 +98,13 @@ class Point:
 
     def __add__(self, other: PointLike) -> "Point":
         return Point(self.row + other[0], self.col + other[1])
-    
+
     def __sub__(self, other: PointLike) -> "Point":
         return Point(self.row - other[0], self.col - other[1])
-    
+
     def __mul__(self, scalar: int) -> "Point":
         return Point(self.row * scalar, self.col * scalar)
-    
+
     def __hash__(self) -> int:
         return (self.row, self.col).__hash__()
 
@@ -113,16 +114,16 @@ class TileMapRow:
         self.row: int = row
         self.tiles: list[str] = []
         self.first_col: int = 0
-    
+
     def min_col(self) -> int:
         return self.first_col
-    
+
     def max_col(self) -> int:
         return self.first_col + len(self.tiles) - 1
 
     def col_range(self) -> range:
         return range(self.first_col, self.first_col + len(self.tiles))
-    
+
     def get(self, col: int) -> str:
         if self.min_col() <= col <= self.max_col():
             return self.tiles[col - self.first_col]
@@ -149,13 +150,13 @@ class TileMapRow:
             else:
                 end_index = min(len(self.tiles), index + len(tiles))
                 self.tiles[index : end_index] = tiles
-    
+
     def copy(self) -> "TileMapRow":
         copy = TileMapRow(self.row, self.filler_tile)
         copy.tiles = self.tiles.copy()
         copy.first_col = self.first_col
         return copy
-    
+
     def __iter__(self) -> Iterator[tuple[Point, str]]:
         return iter((Point(self.row, col), tile) for col, tile in zip(self.col_range(), self.tiles) if tile != self.filler_tile)
 
@@ -166,10 +167,10 @@ class TileMap:
         self.first_row: int = 0
         self.cached_min_col: int = 0
         self.cached_max_col: int = -1
-    
+
     def min_row(self) -> int:
         return self.first_row
-    
+
     def max_row(self) -> int:
         return self.first_row + len(self.rows) - 1
 
@@ -178,7 +179,7 @@ class TileMap:
 
     def min_col(self) -> int:
         return self.cached_min_col
-    
+
     def max_col(self) -> int:
         return self.cached_max_col
 
@@ -192,7 +193,7 @@ class TileMap:
             return self.rows[row].get(col)
         else:
             return self.filler_tile
-    
+
     def put(self, point: PointLike, tiles: str):
         row = point[0]
         col = point[1]
@@ -203,7 +204,7 @@ class TileMap:
         self.rows[row].put(col, tiles)
         self.cached_min_col = min(self.cached_min_col, self.rows[row].min_col())
         self.cached_max_col = max(self.cached_max_col, self.rows[row].max_col())
-    
+
     def copy(self) -> "TileMap":
         copy = TileMap(self.filler_tile)
         copy.rows = [row.copy() for row in self.rows]
@@ -211,10 +212,10 @@ class TileMap:
         copy.cached_min_col = self.cached_min_col
         copy.cached_max_col = self.cached_max_col
         return copy
-    
+
     def __iter__(self) -> Iterator[tuple[Point, str]]:
         return iter(item for row in self.rows for item in row)
-    
+
     def __str__(self) -> str:
         return "\n".join("".join(tile_row.get(col) for col in self.col_range()) for tile_row in self.rows)
 
@@ -231,7 +232,7 @@ class Interval:
 
     def __contains__(self, value: int) -> bool:
         return self.start <= value <= self.end
-    
+
     def intersects(self, other: "Interval") -> bool:
         return self.start <= other.end and self.end >= other.start
 
@@ -328,7 +329,7 @@ class IntervalSet:
     def unite(self, other: "IntervalSet") -> None:
         for interval in other.intervals:
             self.insert(interval)
-    
+
     def intersect(self, other: "IntervalSet") -> None:
         intersected_intervals: list[Interval] = []
         for interval in other.intervals:
@@ -344,3 +345,26 @@ class IntervalSet:
 
     def __repr__(self) -> str:
         return " U ".join(repr(interval) for interval in self.intervals) if self.intervals else "{}"
+
+def matrix_rref(matrix: list[list[Fraction]]) -> list[int]:
+    independent_cols: list[int] = []
+    for col in range(len(matrix[0])):
+        target_row = len(independent_cols)
+        if target_row >= len(matrix):
+            break
+        for row in range(target_row, len(matrix)):
+            if matrix[row][col] == 0:
+                continue
+            matrix[row], matrix[target_row] = matrix[target_row], matrix[row]
+            div_value = matrix[target_row][col]
+            for div_col in range(len(matrix[target_row])):
+                matrix[target_row][div_col] /= div_value
+            for cancel_row in range(len(matrix)):
+                if cancel_row == target_row or matrix[cancel_row][col] == 0:
+                    continue
+                mul_value = -matrix[cancel_row][col]
+                for add_col in range(len(matrix[cancel_row])):
+                    matrix[cancel_row][add_col] += matrix[target_row][add_col] * mul_value
+            independent_cols.append(col)
+            break
+    return independent_cols
