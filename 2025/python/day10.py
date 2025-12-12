@@ -1,4 +1,6 @@
 from utils import *
+from scipy.optimize import linprog
+import numpy
 
 start_time: float = get_start_time()
 
@@ -37,7 +39,7 @@ def increment_parameter_inputs(parameter_inputs: list[int]) -> None:
 total_lights_press_count: int = 0
 total_joltage_press_count: int = 0
 
-for line_no, line in enumerate(get_input_lines("test.txt")):
+for line_no, line in enumerate(get_input_lines("day10.txt")):
     raw_target_lights, *raw_buttons, raw_target_joltage = line.split()
     state_size: int = len(raw_target_lights) - 2
     buttons: list[int] = [parse_button(button) for button in raw_buttons]
@@ -58,43 +60,20 @@ for line_no, line in enumerate(get_input_lines("test.txt")):
                 visit_queue.append(new_lights)
 
     target_joltage: tuple[int, ...] = tuple(int(value) for value in raw_target_joltage[1:-1].split(","))
-    matrix: list[list[Fraction]] = [[Fraction() for _ in range(len(buttons) + 1)] for _ in range(state_size)]
+    matrix: list[list[float]] = [[0.0 for _ in range(len(buttons))] for _ in range(state_size)]
     for col, button in enumerate(buttons):
         for row in range(state_size):
-            matrix[row][col] = Fraction((button >> row) & 1)
-    for row, value in enumerate(target_joltage):
-        matrix[row][-1] = Fraction(value)
-    independent_cols = matrix_rref(matrix)
-    for row in matrix:
-        print("  ".join(map(str, row)))
-    if independent_cols[-1] == len(buttons):
-        print("uh oh")
-        break
-    elif len(independent_cols) == len(buttons):
-        total_joltage_press_count += sum((row[-1] for row in matrix), Fraction()).numerator
-    else:
-        row_muls: list[int] = [max(value.denominator for value in row) for row in matrix]
-        parameters: list[list[int]] = [[(row[col] * mul).numerator for row, mul in zip(matrix, row_muls)] for col in range(len(matrix[0])) if col not in independent_cols]
-        target_vector: list[int] = parameters.pop()
-        parameter_inputs: list[int] = [0] * len(parameters)
-        min_presses: Optional[int] = None
-        while min_presses is None or sum(parameter_inputs) < min_presses:
-            # print(line_no, min_presses, parameter_inputs)
-            presses: int = sum(parameter_inputs)
-            for row in range(len(independent_cols)):
-                difference = target_vector[row] - sum(parameter_input * parameter[row] for parameter_input, parameter in zip(parameter_inputs, parameters))
-                if difference < 0:
-                    break
-                quotient, remainder = divmod(difference, row_muls[row])
-                if remainder != 0:
-                    break
-                presses += quotient * row_muls[row]
-            else:
-                if min_presses is None or presses < min_presses:
-                    min_presses = presses
-            increment_parameter_inputs(parameter_inputs)
-        total_joltage_press_count += min_presses
-    print("done", line_no)
+            matrix[row][col] = float((button >> row) & 1)
+    np_matrix = numpy.array(matrix)
+    np_target = numpy.array([float(value) for value in target_joltage])
+    result = linprog(
+        numpy.ones(len(buttons)),
+        A_eq=np_matrix,
+        b_eq=np_target,
+        method="highs",
+        integrality=1
+    )
+    total_joltage_press_count += sum(map(round, result.x))
 
 print("[10p1] Fewest button presses:", total_lights_press_count)
 print("[10p2] Fewest button presses:", total_joltage_press_count)
